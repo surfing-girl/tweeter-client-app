@@ -1,9 +1,11 @@
 'use strict';
 const express = require('express');
+const TwitterData = require('./twitterData.js');
 const app = express();
 const dummyData = {
   name: 'Joanna',
   age: 23,
+  date: new Date(),
   town: 'London'
 }
 
@@ -12,9 +14,15 @@ app.use('/static', express.static(__dirname + '/public'));
 app.set('view engine', 'jade');
 app.set('views', __dirname + '/templates');
 
+const twitterData = new TwitterData();
+
 app.get('/', (req, res) => {
-  let name = dummyData.name;
-  res.render('index', {dummyData: dummyData});
+  twitterData.getFriendsDirectMessages((gotData) => {
+    console.log("gotData", gotData);
+    res.render('index', {dummyData: gotData});
+  });
+  // let name = dummyData.name;
+  // res.render('index', {dummyData: dummyData});
   console.log("hellooo");
 });
 
