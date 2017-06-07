@@ -17,12 +17,13 @@ app.set('views', __dirname + '/templates');
 const twitterData = new TwitterData();
 
 app.get('/', (req, res) => {
-  twitterData.getFriendsDirectMessages((gotData) => {
+  //twitterData.createFinalData(res);
+  twitterData.createFinalData((gotData) => {
     console.log("gotData", gotData);
     res.render('index', {dummyData: gotData});
   });
   // let name = dummyData.name;
-  // res.render('index', {dummyData: dummyData});
+  // res.render('index', {dummyData: arguments[0]});
   console.log("hellooo");
 });
 
