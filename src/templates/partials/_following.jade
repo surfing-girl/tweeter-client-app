@@ -1,53 +1,14 @@
 .grid-33
   .app--section
     ul.app--user--list
-      li
-        .circle--fluid
-          .circle--fluid--cell.circle--fluid--primary
-            a.app--tweet--author
-              .app--avatar(style='background-image: url(static/images/f-spore.png)')
-                img(src='static/images/f-spore.png')
-              h4 #{dummyData.followers[0].name}
-              p #{dummyData.text}
-          .circle--fluid--cell
-            a.button.button-text Unfollow
-      li
-        .circle--fluid
-          .circle--fluid--cell.circle--fluid--primary
-            a.app--tweet--author
-              .app--avatar(style='background-image: url(static/images/f-spore.png)')
-                img(src='static/images/f-spore.png')
-              h4 Jill Spore
-              p @jillspore
-          .circle--fluid--cell
-            a.button.button-text Unfollow
-      li
-        .circle--fluid
-          .circle--fluid--cell.circle--fluid--primary
-            a.app--tweet--author
-              .app--avatar(style='background-image: url(static/images/f-spore.png)')
-                img(src='static/images/f-spore.png')
-              h4 Jill Spore
-              p @jillspore
-          .circle--fluid--cell
-            a.button.button-text Unfollow
-      li
-        .circle--fluid
-          .circle--fluid--cell.circle--fluid--primary
-            a.app--tweet--author
-              .app--avatar(style='background-image: url(static/images/f-spore.png)')
-                img(src='static/images/f-spore.png')
-              h4 Jill Spore
-              p @jillspore
-          .circle--fluid--cell
-            a.button Follow
-      li
-        .circle--fluid
-          .circle--fluid--cell.circle--fluid--primary
-            a.app--tweet--author
-              .app--avatar(style='background-image: url(static/images/f-spore.png)')
-                img(src='static/images/f-spore.png')
-              h4 Jill Spore
-              p @jillspore
-          .circle--fluid--cell
-            a.button.button-text Unfollow
+      each follower in dataList.followers
+        li
+          .circle--fluid
+            .circle--fluid--cell.circle--fluid--primary
+              a.app--tweet--author
+                .app--avatar(style='background-image: url(' + follower.profile_image_url + ')')
+                  img(src= '' + follower.profile_image_url)
+                h4 #{follower.name}
+                p #{follower.screen_name}
+            .circle--fluid--cell
+              a.button.button-text Unfollow

@@ -51,6 +51,7 @@ TwitterData.prototype.getAuthUserData = function () {
           authUserDataItem.userAvatar = d.user.profile_image_url;
           authUserDataItem.userName = d.user.name;
           authUserDataItem.userScreenName = d.user.screen_name;
+          authUserDataItem.userBackgroundImageUrl = d.user.profile_banner_url;
           this.authUserData.push(authUserDataItem);
         });
         resolve(this.authUserData);
@@ -60,33 +61,41 @@ TwitterData.prototype.getAuthUserData = function () {
 }
 
 TwitterData.prototype.getFriendsDirectMessages = function () {
-  this.T.get('direct_messages', { count: 5 }, (err, data, response) => {
-    if (err) {
-      console.log(err);
-    } else {
-      data.forEach((d) => {
-        this.friendsDirectMsg.text = d.text;
-        this.friendsDirectMsg.name = d.sender.name;
-        this.friendsDirectMsg.screen_name = d.sender.screen_name;
-        this.friendsDirectMsg.profile_image_url = d.sender.profile_image_url;
-        this.friendsDirectMsg.date = d.created_at;
-        //console.log(this.friendsDirectMsg);
-      });
-      //callback(this.friendsDirectMsg);
-    }
+  return new Promise((resolve, reject) => {
+    this.T.get('direct_messages', { count: 5 }, (err, data, response) => {
+      if (err) {
+        console.log(err);
+      } else {
+        data.forEach((d) => {
+          let friendsDirectMsgItem = {};
+          friendsDirectMsgItem.text = d.text;
+          friendsDirectMsgItem.name = d.sender.name;
+          friendsDirectMsgItem.screen_name = d.sender.screen_name;
+          friendsDirectMsgItem.profile_image_url = d.sender.profile_image_url;
+          friendsDirectMsgItem.date = d.created_at;
+          this.friendsDirectMsg.push(friendsDirectMsgItem);
+        });
+        resolve(this.friendsDirectMsg);
+      }
+    });
   });
 }
 
 TwitterData.prototype.getAuthUserDirectMessages = function () {
-  this.T.get('direct_messages/sent', { count: 5 }, (err, data, response) => {
-    if (err) {
-      console.log(err);
-    } else {
-      data.forEach((d) => {
-        this.authDirectMsg.text = d.text;
-        this.authDirectMsg.date = d.created_at;
-      });
-    }
+  return new Promise((resolve, reject) => {
+    this.T.get('direct_messages/sent', { count: 5 }, (err, data, response) => {
+      if (err) {
+        console.log(err);
+      } else {
+        data.forEach((d) => {
+          let authUserMessages = {};
+          authUserMessages.text = d.text;
+          authUserMessages.date = d.created_at;
+          this.authDirectMsg.push(authUserMessages);
+        });
+        resolve(this.authDirectMsg);
+      }
+    });
   });
 }
 
@@ -94,14 +103,28 @@ TwitterData.prototype.createFinalData = function (callback) {
   let promises = [];
   promises.push(this.getFollowersData());
   promises.push(this.getAuthUserData());
+  promises.push(this.getFriendsDirectMessages());
+  promises.push(this.getAuthUserDirectMessages());
   Promise.all(promises).then(values => {
     let finalData = {};
     finalData.followers = values[0];
     finalData.timeline = values[1];
+    finalData.friends_direct_messages = values[2];
+    finalData.user_direct_messages = values[3];
     callback(finalData);
   }, function(err) {
 
   });
-};
+}
+
+TwitterData.prototype.sendTwit = function (twitText) {
+  this.T.post('statuses/update', { status: twitText }, (err, data, response) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log(data.text + ' was tweeted');
+    }
+  });
+}
 
 module.exports = TwitterData;

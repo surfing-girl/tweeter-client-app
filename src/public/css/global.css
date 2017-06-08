@@ -250,7 +250,7 @@ body {
 /* line 6, ../sass/circle/core/_layout.sass */
 .bounds {
   max-width: 100%;
-  margin: 0 auto;
+  margin: 3% auto
 }
 
 /* line 10, ../sass/circle/core/_layout.sass */
@@ -2141,6 +2141,7 @@ body {
 
 /* line 29, ../sass/global.sass */
 .circle--header {
+  height: 13%;
   position: fixed;
   top: 0;
   right: 0;
@@ -2152,7 +2153,8 @@ body {
 
 /* line 39, ../sass/global.sass */
 .app--body {
-  height: 100%;
+  margin-top: 103px;
+  height: 70%;
 }
 /* line 2, ../sass/circle/core/_mixins.sass */
 .app--body:before, .app--body:after {
@@ -2181,7 +2183,7 @@ body {
 /* line 53, ../sass/global.sass */
 .app--section--header {
   position: fixed;
-  top: 65px;
+  top: 16%;
   right: 0;
   left: 0;
   background: #fafafa;
