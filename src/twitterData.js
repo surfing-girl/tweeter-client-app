@@ -1,6 +1,8 @@
 const Twit = require('twit');
 const config = require('./config.js');
 
+
+//setting up authentication
 function TwitterData() {
   this.T = new Twit({
     consumer_key:         config.consumer_key,
@@ -13,13 +15,12 @@ function TwitterData() {
   this.authUserData = [];
   this.friendsDirectMsg = [];
   this.authDirectMsg = [];
-
-  console.log("start", this.friendsDirectMsg);
 }
 
+//Function getting followers screen name, name, profile image URL and pushes data to followersData
 TwitterData.prototype.getFollowersData = function () {
   return new Promise((resolve, reject) => {
-    this.T.get('followers/list', { screen_name: 'JoannaDemecka' }, (err, data, response) => {
+    this.T.get('followers/list', { screen_name: 'JoannaDemecka', count: 5 }, (err, data, response) => {
       if (err) {
         console.log(err);
       } else {
@@ -36,9 +37,12 @@ TwitterData.prototype.getFollowersData = function () {
   });
 }
 
+
+//Function gets authorisied user's twits, retweets and favorite count, profile image, name and screen name
+//It returns error if there is no such a user
 TwitterData.prototype.getAuthUserData = function () {
   return new Promise((resolve, reject) => {
-    this.T.get('statuses/user_timeline', { screen_name: 'JoannaDemecka', count: 5 }, (err, data, response) => {
+    this.T.get('statuses/home_timeline', { screen_name: 'JoannaDemecka', count: 5 }, (err, data, response) => {
       if (err) {
         console.log(err);
       } else {
@@ -51,7 +55,6 @@ TwitterData.prototype.getAuthUserData = function () {
           authUserDataItem.userAvatar = d.user.profile_image_url;
           authUserDataItem.userName = d.user.name;
           authUserDataItem.userScreenName = d.user.screen_name;
-          authUserDataItem.userBackgroundImageUrl = d.user.profile_banner_url;
           this.authUserData.push(authUserDataItem);
         });
         resolve(this.authUserData);
@@ -60,6 +63,8 @@ TwitterData.prototype.getAuthUserData = function () {
   });
 }
 
+
+//Function gets 5 direct messages from friends with message info
 TwitterData.prototype.getFriendsDirectMessages = function () {
   return new Promise((resolve, reject) => {
     this.T.get('direct_messages', { count: 5 }, (err, data, response) => {
@@ -81,6 +86,8 @@ TwitterData.prototype.getFriendsDirectMessages = function () {
   });
 }
 
+
+//Function gets last 5 messages written by authorised user, in case I will use it in the future
 TwitterData.prototype.getAuthUserDirectMessages = function () {
   return new Promise((resolve, reject) => {
     this.T.get('direct_messages/sent', { count: 5 }, (err, data, response) => {
@@ -91,6 +98,10 @@ TwitterData.prototype.getAuthUserDirectMessages = function () {
           let authUserMessages = {};
           authUserMessages.text = d.text;
           authUserMessages.date = d.created_at;
+          authUserMessages.name = d.sender.name;
+          authUserMessages.screen_name = d.sender.screen_name;
+          authUserMessages.profile_image_url = d.sender.profile_image_url;
+          authUserMessages.profile_banner_url = d.sender.profile_banner_url;
           this.authDirectMsg.push(authUserMessages);
         });
         resolve(this.authDirectMsg);
@@ -99,6 +110,7 @@ TwitterData.prototype.getAuthUserDirectMessages = function () {
   });
 }
 
+//Function creates final data, which is used in jade template
 TwitterData.prototype.createFinalData = function (callback) {
   let promises = [];
   promises.push(this.getFollowersData());
@@ -117,6 +129,8 @@ TwitterData.prototype.createFinalData = function (callback) {
   });
 }
 
+
+//Function for sending twits
 TwitterData.prototype.sendTwit = function (twitText) {
   this.T.post('statuses/update', { status: twitText }, (err, data, response) => {
     if (err) {
@@ -124,6 +138,24 @@ TwitterData.prototype.sendTwit = function (twitText) {
     } else {
       console.log(data.text + ' was tweeted');
     }
+  });
+}
+
+
+//Funnction for create tweets data and streaming using twit and socket.io
+TwitterData.prototype.streamData = function (io) {
+  let stream = this.T.stream('user', { screen_name: 'JoannaDemecka' });
+  stream.on('tweet', (data) => {
+    let tweet = {
+      "text" : data.text,
+      "screen_name" : data.user.screen_name,
+      "name": data.user.screen_name ,
+      "imageURL": data.user.profile_image_url,
+      "retweet_count": data.retweet_count,
+      "likes": data.favorite_count,
+      "date": data.created_at
+    }
+    io.sockets.emit('twitter-stream', tweet);
   });
 }
 
