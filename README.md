@@ -1,6 +1,7 @@
 ## Installation
 
-Run the app by typing `npm start` to the console.
+Run the app by typing `npm start` to the console. 
+Place your config.js file into a src directory.
 
 ## Features
 
@@ -15,6 +16,3 @@ My dependencies:
 - [twit](https://github.com/ttezel/twit) for supporting the REST and Streaming API.
 - [socket.io](https://socket.io/) for live streaming.
 
-Hints:
-
-- config.js is imported into twitterData.js file
