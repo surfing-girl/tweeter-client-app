@@ -1,9 +1,7 @@
 const Twit = require('twit');
-const config = require('./config.js');
-
 
 //setting up authentication
-function TwitterData() {
+function TwitterData(config) {
   this.T = new Twit(config);
   this.followersData = [];
   this.authUserData = [];

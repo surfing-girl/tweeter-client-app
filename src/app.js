@@ -5,6 +5,7 @@ const server = app.listen(3000);
 const io = require('socket.io').listen(server);
 const TwitterData = require('./twitterData.js');
 const bodyParser = require('body-parser');
+const config = require('./config.js');
 
 app.use('/static', express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -14,7 +15,7 @@ app.set('views', __dirname + '/templates');
 
 //Get the index page and render data into template
 app.get('/', (req, res) => {
-  const twitterData = new TwitterData();
+  const twitterData = new TwitterData(config);
   twitterData.createFinalData((gotData) => {
     res.render('index', {dataList: gotData});
   });
@@ -28,7 +29,7 @@ app.get('/error', (req, res) => {
 //Post tweet on Tweeter
 app.post('/', (req, res, next) => {
   if (req.body.twitText) {
-    const twitterData = new TwitterData();
+    const twitterData = new TwitterData(config);
     twitterData.sendTwit(req.body.twitText);
     twitterData.createFinalData((gotData) => {
       res.redirect('/');
@@ -57,7 +58,7 @@ app.use(function(err, req, res, next) {
 
 let twee = io.of('tweet');
 
-const streamTweet = new TwitterData();
+const streamTweet = new TwitterData(config);
 streamTweet.streamData(io);
 
 console.log("The frontend server is running on port 3000!");
