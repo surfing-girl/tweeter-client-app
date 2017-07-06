@@ -1,7 +1,7 @@
 ## Installation
 
+Place your config.js file (keys and access tokens) into a src directory.
 Run the app by typing `npm start` to the console. 
-Place your config.js file into a src directory.
 
 ## Features
 
