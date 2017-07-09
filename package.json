@@ -12,6 +12,7 @@
   "dependencies": {
     "body-parser": "^1.17.2",
     "express": "^4.15.3",
+    "jade": "^1.11.0",
     "socket.io": "^2.0.2",
     "twit": "^2.2.9"
   }
